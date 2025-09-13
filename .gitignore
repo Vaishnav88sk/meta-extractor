@@ -7,12 +7,7 @@ src/__pycache__/
 
 # Virtual environment
 venv/
-.env/
 local/
-
-# Environment variables
-.env
-*.env
 
 # Temporary files
 /tmp/*
