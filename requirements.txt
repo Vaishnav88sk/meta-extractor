@@ -1,0 +1,13 @@
+flask[async]
+asyncpg
+atlan-application-sdk
+mysql-connector-python
+oracledb
+pandas
+openpyxl
+python-dotenv
+dapr
+temporalio
+boto3
+orjson
+daft

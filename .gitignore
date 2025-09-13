@@ -1,0 +1,29 @@
+# Python-specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+src/__pycache__/
+
+# Virtual environment
+venv/
+.env/
+local/
+
+# Environment variables
+.env
+*.env
+
+# Temporary files
+/tmp/*
+*.tmp
+*.bak
+*.swp
+*~
+
+# Vscode
+.vscode/
+
+# Logs and runtime data
+*.log
+logs/
