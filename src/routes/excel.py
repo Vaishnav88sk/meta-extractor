@@ -11,8 +11,8 @@ def fetch_excel_metadata(file_path: str, connection_qualified_name: str) -> list
     result = []
 
     try:
-        xl = pd.ExcelFile(file_path)
-        for sheet_name in xl.sheet_names:
+        xl = pd.ExcelFile(file_path)     # Load the Excel file
+        for sheet_name in xl.sheet_names:       # Process each sheet as a table
             schema_data = {
                 "schema_name": sheet_name,
                 "database_name": os.path.basename(file_path),
@@ -25,8 +25,8 @@ def fetch_excel_metadata(file_path: str, connection_qualified_name: str) -> list
                 schema_entity["tables"] = []
                 result.append(schema_entity)
 
-                df = pd.read_excel(file_path, sheet_name=sheet_name)
-                table_data = {
+                df = pd.read_excel(file_path, sheet_name=sheet_name)        # Read the sheet into a DataFrame
+                table_data = {          # Prepare table-level metadata (sheet treated as table)
                     "table_name": sheet_name,
                     "schema_name": sheet_name,
                     "database_name": os.path.basename(file_path),
@@ -40,7 +40,7 @@ def fetch_excel_metadata(file_path: str, connection_qualified_name: str) -> list
                     table_entity["constraints"] = []
                     schema_entity["tables"].append(table_entity)
 
-                    for col_name, dtype in df.dtypes.items():
+                    for col_name, dtype in df.dtypes.items():       # Prepare column-level metadata
                         col_data = {
                             "column_name": str(col_name),
                             "schema_name": sheet_name,
@@ -70,15 +70,15 @@ def register_excel_route(app):
             data = request.form.to_dict()
             connection_qualified_name = data.get("connection_qualified_name", "default/excel")
             file_path = None
-            if 'file' in request.files and request.files['file'].filename:
+            if 'file' in request.files and request.files['file'].filename:      # Handle file upload
                 file = request.files['file']
-                if not file.filename.endswith(('.xlsx', '.xls')):
+                if not file.filename.endswith(('.xlsx', '.xls')):       # validate file type
                     return jsonify({"error": "Invalid file format, must be .xlsx or .xls"}), 400
                 file_path = f"/tmp/{file.filename}"
                 file.save(file_path)
                 logger.info(f"Processing uploaded Excel file: {file_path}")
             else:
-                file_path = os.getenv("EXCEL_FILE_PATH")
+                file_path = os.getenv("EXCEL_FILE_PATH")        # Use file path from environment if no upload
                 if not file_path:
                     return jsonify({"error": "No file uploaded and EXCEL_FILE_PATH not set in .env"}), 400
                 if not os.path.exists(file_path):
@@ -87,9 +87,9 @@ def register_excel_route(app):
                     return jsonify({"error": "Invalid file format in EXCEL_FILE_PATH, must be .xlsx or .xls"}), 400
                 logger.info(f"Processing Excel file from .env: {file_path}")
 
-            metadata = fetch_excel_metadata(file_path, connection_qualified_name)
+            metadata = fetch_excel_metadata(file_path, connection_qualified_name)       # Extract metadata from the Excel file
             if 'file' in request.files and request.files['file'].filename and os.path.exists(file_path):
-                os.remove(file_path)
+                os.remove(file_path)        # Cleanup uploaded temp file
                 logger.info(f"Deleted temporary file: {file_path}")
             return jsonify({"schemas": metadata}), 200
         except Exception as e:

@@ -10,6 +10,7 @@ from typing import Any, Dict, List
 
 logger = get_logger(__name__)
 
+# SQL queries for schema, table, column, and constraints metadata per DB type
 QUERIES = {
     "schema": {
         "postgresql": """
@@ -100,7 +101,7 @@ async def fetch_db_metadata(client, credentials: Dict[str, Any], connection_qual
     result = []
 
     try:
-        schemas = await client.execute_query(QUERIES["schema"][db_type])
+        schemas = await client.execute_query(QUERIES["schema"][db_type])    # Fetch schemas
         if not schemas:
             logger.warning(f"No schemas found for {db_type}")
             return result
@@ -118,6 +119,7 @@ async def fetch_db_metadata(client, credentials: Dict[str, Any], connection_qual
                 schema_entity["tables"] = []
                 result.append(schema_entity)
 
+                # fetch tables for the schema
                 tables = await client.execute_query(QUERIES["table"][db_type], schema_row["schema_name"])
                 for table_row in tables:
                     table_data = {
@@ -134,10 +136,12 @@ async def fetch_db_metadata(client, credentials: Dict[str, Any], connection_qual
                         table_entity["constraints"] = []
                         schema_entity["tables"].append(table_entity)
 
+                        # fetch columns and constraints for the table
                         columns = await client.execute_query(QUERIES["column"][db_type], schema_row["schema_name"], table_row["table_name"])
                         constraints = await client.execute_query(QUERIES["constraint"][db_type], schema_row["schema_name"], table_row["table_name"])
 
                         for col_row in columns:
+                            # Map constraints to the current column
                             col_constraints = [cons["constraint_type"] for cons in constraints if cons["column_name"] == col_row["column_name"]]
                             constraint_type = col_constraints[0] if col_constraints else ""
                             col_data = {
@@ -157,6 +161,7 @@ async def fetch_db_metadata(client, credentials: Dict[str, Any], connection_qual
                             if col_entity:
                                 table_entity["columns"].append(col_entity)
 
+                        # Append constraints to table entity (deduplicated if needed)
                         for cons_row in constraints:
                             table_entity["constraints"].append({
                                 "constraint_name": cons_row["constraint_name"],

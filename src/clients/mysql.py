@@ -12,7 +12,7 @@ class MySQLClient(AsyncBaseSQLClient):
     def __init__(self):
         self.logger = get_logger(__name__)
 
-    async def connect(self, credentials: Dict[str, Any]) -> None:
+    async def connect(self, credentials: Dict[str, Any]) -> None:       # Connect
         try:
             self.engine = mysql.connector.connect(
                 user=credentials["user"],
@@ -23,12 +23,12 @@ class MySQLClient(AsyncBaseSQLClient):
                 charset='utf8mb4',
                 use_pure=True
             )
-            self.logger.info("Successfully connected to MySQL database")
+            self.logger.info("Successfully connected to MySQL database")        # Logger
         except Exception as e:
             self.logger.error(f"Failed to connect to MySQL: {str(e)}")
             raise
 
-    async def execute_query(self, query: str, *args) -> list:
+    async def execute_query(self, query: str, *args) -> list:       # Execute a query
         try:
             cursor = self.engine.cursor(dictionary=True)
             cursor.execute(query, args)
@@ -41,7 +41,7 @@ class MySQLClient(AsyncBaseSQLClient):
             self.logger.error(f"Query execution failed: {str(e)}")
             raise
 
-    async def close(self):
+    async def close(self):      # Close connection
         if hasattr(self, "engine") and self.engine:
             self.engine.close()
             self.logger.info("MySQL connection closed")

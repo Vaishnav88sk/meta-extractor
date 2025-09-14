@@ -13,6 +13,7 @@ class OracleClient(AsyncBaseSQLClient):
         self.logger = get_logger(__name__)
 
     async def connect(self, credentials: Dict[str, Any]) -> None:
+        # Connect synchronously but wrapped in async interface.
         try:
             dsn = f"{credentials['host']}:{credentials['port']}/{credentials['service_name']}"
             self.engine = oracledb.connect(
@@ -26,6 +27,7 @@ class OracleClient(AsyncBaseSQLClient):
             raise
 
     async def execute_query(self, query: str, *args) -> list:
+        # Execute a query using synchronous cursor in thread pool to avoid blocking.
         try:
             cursor = self.engine.cursor()
             cursor.execute(query, args)
@@ -39,6 +41,7 @@ class OracleClient(AsyncBaseSQLClient):
             raise
 
     async def close(self):
+        # Close connection synchronously but wrapped in async interface.
         if hasattr(self, "engine") and self.engine:
             self.engine.close()
             self.logger.info("Oracle connection closed")

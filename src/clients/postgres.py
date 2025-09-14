@@ -13,6 +13,9 @@ class PostgresClient(AsyncBaseSQLClient):
         self.logger = get_logger(__name__)
 
     async def connect(self, credentials: Dict[str, Any]) -> None:
+        """
+        Establish a connection pool to PostgreSQL using credentials.
+        """
         try:
             connection_string = self.DB_CONFIG["template"].format(**credentials)
             self.engine = await asyncpg.create_pool(connection_string)
@@ -22,6 +25,9 @@ class PostgresClient(AsyncBaseSQLClient):
             raise
 
     async def execute_query(self, query: str, *args) -> list:
+        """
+        Execute a query with optional arguments and return list of dict results.
+        """
         async with self.engine.acquire() as connection:
             try:
                 result = await connection.fetch(query, *args)

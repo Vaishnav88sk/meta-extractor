@@ -6,7 +6,7 @@ logger = get_logger(__name__)
 
 class GenericSchema:
     @classmethod
-    def get_attributes(cls, obj: Dict[str, Any]) -> Dict[str, Any]:
+    def get_attributes(cls, obj: Dict[str, Any]) -> Dict[str, Any]:     # Extract schema attributes from input dict  
         attributes = {
             "name": obj.get("schema_name", ""),
             "qualifiedName": f"{obj.get('connection_qualified_name', '')}/{obj.get('schema_name', '')}",
@@ -23,7 +23,7 @@ class GenericSchema:
 
 class GenericTable:
     @classmethod
-    def get_attributes(cls, obj: Dict[str, Any]) -> Dict[str, Any]:
+    def get_attributes(cls, obj: Dict[str, Any]) -> Dict[str, Any]:     # Extract table attributes from input dict 
         attributes = {
             "name": obj.get("table_name", ""),
             "schemaName": obj.get("schema_name", ""),
@@ -41,7 +41,7 @@ class GenericTable:
 
 class GenericColumn:
     @classmethod
-    def get_attributes(cls, obj: Dict[str, Any]) -> Dict[str, Any]:
+    def get_attributes(cls, obj: Dict[str, Any]) -> Dict[str, Any]:     # Extract column attributes from input dict
         attributes = {
             "name": obj.get("column_name", ""),
             "qualifiedName": f"{obj.get('connection_qualified_name', '')}/{obj.get('schema_name', '')}/{obj.get('table_name', '')}/{obj.get('column_name', '')}",
@@ -64,7 +64,7 @@ class GenericColumn:
 
 class GenericAtlasTransformer(AtlasTransformer):
     def __init__(self, connector_name: str, tenant_id: str = "default", **kwargs: Any):
-        super().__init__(connector_name, tenant_id, **kwargs)
+        super().__init__(connector_name, tenant_id, **kwargs)       # Map entity types to corresponding attribute extractor classes
         self.entity_class_definitions = {
             "SCHEMA": GenericSchema,
             "TABLE": GenericTable,
