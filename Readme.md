@@ -1,11 +1,14 @@
 # Metadata Extractor
 
-<!-- A Flask-based application to extract metadata from PostgreSQL, MySQL, Oracle databases, and Excel files using the `atlan-application-sdk`. The application exposes REST API endpoints to retrieve metadata in a structured format (schemas → tables → columns/constraints) with descriptions and tags, using credentials from a `.env` file. -->
+A Flask-based application to extract metadata from PostgreSQL, MySQL, Oracle databases, and Excel files using the **`atlan-application-sdk`**. The application exposes REST API endpoints to retrieve metadata in a structured format (schemas → tables → columns/constraints) with descriptions and tags, using credentials from a `.env` file.
 
 ## Project Structure
 
 ```
 metadata-extractor/
+├── assets/
+├── files/
+│   ├── sample.xlsx
 ├── src/
 │   ├── clients/
 │   │   ├── __init__.py
@@ -30,6 +33,21 @@ metadata-extractor/
 ├── README.md
 ```
 
+## Architecture
+It is a metadata extractor that connects to various data sources like MySQL, PostgreSQL, Oracle, and Excel. Through a backend application running on port 5000, it uses the **Atlan SDK** to establish connections, extract metadata, and process it. The output is a structured **JSON file** containing the metadata, enabling easy integration and further analysis.
+
+#### High-Level Flow:
+    ■ Connect to the data source.
+    ■ Use the Atlan Application SDK for connection and schema &
+    metadata extraction.
+    ■ Extract schema info (columns, datatypes, constraints).
+    ■ Extract business context (tags, descriptions, if available).
+    ■ Return results (JSON) via the app.
+<p align="center">
+  <img src="/assets/sourcesense_architecture.png" alt="Architecture" style="border: 2px solid black;" />
+</p>
+
+
 ## Prerequisites
 
 - Python 3.8+
@@ -37,13 +55,14 @@ metadata-extractor/
 - PostgreSQL, MySQL, and Oracle servers (if extracting database metadata)
 - Oracle client libraries (for Oracle support)
 - Excel file (`.xlsx` or `.xls`) at the path specified in `.env`
+- Recommended [Prerequisites and Installations](https://github.com/atlanhq/atlan-sample-apps/blob/main/connectors/mysql/README.md) by atlan
 
 ## Installation
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/Vaishnav88sk/metadata-extractor.git
-   cd metadata-extractor/
+   git clone https://github.com/Vaishnav88sk/meta-extractor.git
+   cd meta-extractor/
    ```
 
 2. **Set Up Virtual Environment**:
@@ -118,8 +137,7 @@ metadata-extractor/
    - **Excel Metadata**:
      - **Endpoint**: `POST /extract_excel`
      - **Body**:
-       - **Option 1 (File Upload)**: Form-data with `file` (upload `.xlsx` or `.xls`) and optional `connection_qualified_name`.
-       - **Option 2 (Use .env Path)**: JSON with `{"connection_qualified_name": "default/excel"}` to use `EXCEL_FILE_PATH`.
+       - **Use .env Path**: JSON with `{"connection_qualified_name": "default/excel"}` to use `EXCEL_FILE_PATH`.
    - **Response Format**:
      ```json
      {
@@ -156,6 +174,7 @@ metadata-extractor/
    - Use Postman to send POST requests to the endpoints above.
    - For `/extract_excel`, test both file upload (form-data) and `.env` path (JSON body).
    - Verify the response contains the expected metadata structure.
+   ![PostgreSQL- Postman testing](./assets/postman_testing_postgres.png)
 
 ## Troubleshooting
 
