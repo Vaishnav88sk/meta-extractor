@@ -110,6 +110,7 @@ It is a metadata extractor that connects to various data sources like MySQL, Pos
    ```
    - Replace placeholders with your database credentials.
    - Ensure the Excel file (e.g., `/files/sample.xlsx`) exists and is readable.
+   - If you are still having database issue, try for excel files for understanding.
 
 ## Running the Application
 
